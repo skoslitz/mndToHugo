@@ -1,2 +1,5 @@
-# ignore json data files
+# ignore data files
 /posts
+
+# ignore binary
+mndToHugo
