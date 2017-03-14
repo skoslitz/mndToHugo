@@ -5,6 +5,7 @@ import (
 	"fmt"
 	// "os"
 	"io/ioutil"
+	"strings"
 )
 
 func main() {
@@ -69,10 +70,24 @@ func parseBlog() (BlogPosts, error) {
 
 	}
 
-	fmt.Println(len(blogposts.Posts[0].Tags))
-	fmt.Println("---")
-	fmt.Println(blogposts.Posts[0].Tags)
+	fmt.Println(blogposts.Posts[58].Title)
+	fmt.Println(blogposts.Posts[59].Title)
+
+	var contentFile ContentFile
+	for _, value := range blogposts.Posts {
+
+		contentFile.Author = value.Author
+		contentFile.Date = value.Created.Date
+		contentFile.DateUpdate = value.Updated.Date
+		contentFile.Filename = strings.ToLower(value.Title)
+		fmt.Println(value.Language, contentFile.Filename)
+	}
 
 	return blogposts, nil
 
+}
+
+func makeContentFile(BlogPosts) (ContentFile, error) {
+
+	return ContentFile{}, nil
 }
