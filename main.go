@@ -5,6 +5,7 @@ import (
 	"fmt"
 	// "os"
 	"io/ioutil"
+	"regexp"
 	"strings"
 )
 
@@ -39,6 +40,8 @@ type Datetime struct {
 
 type Post struct {
 	Title        string `xml:"header"`
+	URL          string `xml:"url"`
+	Id           int    `xml:"id"`
 	Author       string
 	Created      Datetime `xml:"created_at"`
 	Updated      Datetime `xml:"updated_at"`
@@ -70,17 +73,38 @@ func parseBlog() (BlogPosts, error) {
 
 	}
 
-	fmt.Println(blogposts.Posts[58].Title)
-	fmt.Println(blogposts.Posts[59].Title)
-
 	var contentFile ContentFile
 	for _, value := range blogposts.Posts {
 
 		contentFile.Author = value.Author
 		contentFile.Date = value.Created.Date
 		contentFile.DateUpdate = value.Updated.Date
-		contentFile.Filename = strings.ToLower(value.Title)
-		fmt.Println(value.Language, contentFile.Filename)
+		contentFile.Title = value.Title
+		contentFile.Filename = strings.ToLower(value.URL)
+
+		// de blogs
+		searchTermDe := `http://www.mynewsdesk.com/de/nimirum/blog_posts/`
+		reDe := regexp.MustCompile(searchTermDe)
+		reDeSlice := reDe.FindStringSubmatch(string(contentFile.Filename))
+
+		if len(reDeSlice) > 0 {
+			fWithoutUrlDe := strings.TrimPrefix(contentFile.Filename, reDeSlice[0])
+			contentFile.Filename = fWithoutUrlDe[:len(fWithoutUrlDe)-6]
+		}
+
+		// uk blogs
+		searchTermUk := `http://www.mynewsdesk.com/uk/nimirum/blog_posts/`
+		reUk := regexp.MustCompile(searchTermUk)
+		reUkSlice := reUk.FindStringSubmatch(string(contentFile.Filename))
+
+		if len(reUkSlice) > 0 {
+			fWithoutUrlUk := strings.TrimPrefix(contentFile.Filename, reUkSlice[0])
+			contentFile.Filename = fWithoutUrlUk[:len(fWithoutUrlUk)-6]
+
+		}
+
+		fmt.Println(contentFile.Filename)
+
 	}
 
 	return blogposts, nil
