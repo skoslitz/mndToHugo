@@ -3,10 +3,12 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
-	// "os"
 	"io/ioutil"
+	"os"
 	"regexp"
+	"strconv"
 	"strings"
+	"text/template"
 )
 
 func main() {
@@ -74,12 +76,20 @@ func parseBlog() (BlogPosts, error) {
 	}
 
 	var contentFile ContentFile
-	for _, value := range blogposts.Posts {
+	for index, value := range blogposts.Posts {
 
+		contentFile.Title = value.Title
+		contentFile.Id = strconv.Itoa(index)
 		contentFile.Author = value.Author
 		contentFile.Date = value.Created.Date
 		contentFile.DateUpdate = value.Updated.Date
-		contentFile.Title = value.Title
+		contentFile.Language = value.Language
+		contentFile.Summary = value.Summary
+		contentFile.Image = value.Image
+		contentFile.ImageCaption = value.ImageCaption
+		contentFile.Tags = value.Tags
+
+		/* build filenames*/
 		contentFile.Filename = strings.ToLower(value.URL)
 
 		// de blogs
@@ -103,7 +113,29 @@ func parseBlog() (BlogPosts, error) {
 
 		}
 
-		fmt.Println(contentFile.Filename)
+		/* build .md from Contentfile */
+
+		blogpost := Frontmatter{
+			Title:        contentFile.Title,
+			Id:           contentFile.Id,
+			Author:       contentFile.Author,
+			Date:         contentFile.Date,
+			DateUpdate:   contentFile.DateUpdate,
+			Language:     contentFile.Language,
+			Summary:      contentFile.Summary,
+			Image:        contentFile.Image,
+			ImageCaption: contentFile.ImageCaption,
+			Tags:         contentFile.Tags,
+		}
+		tmpl, err := template.ParseFiles("blogpost.md")
+
+		if err != nil {
+			panic(err)
+		}
+		err = tmpl.ExecuteTemplate(os.Stdout, "blogpost.md", blogpost)
+		if err != nil {
+			panic(err)
+		}
 
 	}
 
