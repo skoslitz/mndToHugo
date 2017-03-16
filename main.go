@@ -3,8 +3,11 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
+	//"io"
 	"io/ioutil"
+	//"net/http"
 	"os"
+	//"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -75,18 +78,19 @@ func parseBlog() (BlogPosts, error) {
 
 	}
 
+	postQuantities := len(blogposts.Posts)
 	var contentFile ContentFile
 	for index, value := range blogposts.Posts {
 
-		contentFile.Title = value.Title
-		contentFile.Id = strconv.Itoa(index)
+		contentFile.Title = strings.TrimSpace(value.Title)
+		contentFile.Id = "B_" + strconv.Itoa(postQuantities-index)
 		contentFile.Author = value.Author
 		contentFile.Date = value.Created.Date
 		contentFile.DateUpdate = value.Updated.Date
 		contentFile.Language = value.Language
-		contentFile.Summary = value.Summary
-		contentFile.Image = value.Image
-		contentFile.ImageCaption = value.ImageCaption
+		contentFile.Summary = strings.TrimSpace(value.Summary)
+		contentFile.Image = strings.TrimSpace(value.Image)
+		contentFile.ImageCaption = strings.TrimSpace(value.ImageCaption)
 		contentFile.Tags = value.Tags
 
 		/* build filenames*/
@@ -136,6 +140,37 @@ func parseBlog() (BlogPosts, error) {
 		if err != nil {
 			panic(err)
 		}
+
+		/* prepare post assets and copy them*/
+		/*staticDir := path.Join("static/img/blog/", contentFile.Id)
+		os.MkdirAll(staticDir, 0755)
+
+		if len(contentFile.Image) > 5 {
+
+			resp, err := http.Get(contentFile.Image)
+			if err != nil {
+				panic(err)
+			}
+			defer resp.Body.Close()
+
+			fileLength := len(contentFile.Image)
+			fileName := contentFile.Id
+			fileExt := contentFile.Image[fileLength-3 : fileLength]
+			filePath := path.Join("static/img/blog/", contentFile.Id, fileName+"."+fileExt)
+
+			imgfile, err := os.Create(filePath)
+			if err != nil {
+				panic(err)
+			}
+
+			_, err = io.Copy(imgfile, resp.Body)
+			if err != nil {
+				panic(err)
+			}
+
+			defer imgfile.Close()
+			fmt.Println("\n Img copy done")
+		}*/
 
 	}
 

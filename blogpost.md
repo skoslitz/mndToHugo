@@ -1,6 +1,6 @@
 +++
 title = "{{ .Title }}"
-id = "B_{{ .Id }}"
+id = "{{ .Id }}"
 author = "{{ .Author }}"
 date = "{{ .Date }}"
 date_update = "{{ .DateUpdate }}"
