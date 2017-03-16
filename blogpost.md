@@ -10,3 +10,5 @@ image = "{{ .Image }}"
 image_caption = "{{ .ImageCaption }}"
 tags = "{{ .Tags }}"
 +++
+
+{{ .Content }}

@@ -7,7 +7,7 @@ import (
 	"io/ioutil"
 	//"net/http"
 	"os"
-	//"path"
+	"path"
 	"regexp"
 	"strconv"
 	"strings"
@@ -28,6 +28,7 @@ type Frontmatter struct {
 	DateUpdate   string
 	Language     string
 	Summary      string
+	Content      string
 	Image        string
 	ImageCaption string
 	Tags         []string
@@ -35,7 +36,6 @@ type Frontmatter struct {
 
 type ContentFile struct {
 	Frontmatter
-	Content  string
 	Filename string
 }
 
@@ -82,19 +82,41 @@ func parseBlog() (BlogPosts, error) {
 	var contentFile ContentFile
 	for index, value := range blogposts.Posts {
 
-		contentFile.Title = strings.TrimSpace(value.Title)
+		quote := regexp.MustCompile(`"`)
+		table := regexp.MustCompile(`(<table>.*<\/table>)`)
+
+		contentFile.Title = strings.TrimSpace(quote.ReplaceAllString(value.Title,
+			"\\\""))
 		contentFile.Id = "B_" + strconv.Itoa(postQuantities-index)
 		contentFile.Author = value.Author
 		contentFile.Date = value.Created.Date
 		contentFile.DateUpdate = value.Updated.Date
 		contentFile.Language = value.Language
-		contentFile.Summary = strings.TrimSpace(value.Summary)
+		contentFile.Summary = strings.TrimSpace(quote.ReplaceAllString(value.Summary,
+			"\\\""))
 		contentFile.Image = strings.TrimSpace(value.Image)
-		contentFile.ImageCaption = strings.TrimSpace(value.ImageCaption)
+		contentFile.ImageCaption = strings.TrimSpace(quote.ReplaceAllString(value.ImageCaption,
+			"\\\""))
 		contentFile.Tags = value.Tags
+
+		contentFile.Content = strings.TrimSpace(quote.ReplaceAllString(contentFile.Content,
+			"\\\""))
+
+		/* TODO */
+		contentFile.Content = table.ReplaceAllString(value.Body, "")
 
 		/* build filenames*/
 		contentFile.Filename = strings.ToLower(value.URL)
+
+		/* set img to /static path */
+		if len(contentFile.Image) > 5 {
+			fileLength := len(contentFile.Image)
+			fileName := contentFile.Id
+			fileExt := contentFile.Image[fileLength-3 : fileLength]
+			filePath := path.Join(contentFile.Id, fileName+"."+fileExt)
+
+			contentFile.Image = filePath
+		}
 
 		// de blogs
 		searchTermDe := `http://www.mynewsdesk.com/de/nimirum/blog_posts/`
@@ -127,6 +149,7 @@ func parseBlog() (BlogPosts, error) {
 			DateUpdate:   contentFile.DateUpdate,
 			Language:     contentFile.Language,
 			Summary:      contentFile.Summary,
+			Content:      contentFile.Content,
 			Image:        contentFile.Image,
 			ImageCaption: contentFile.ImageCaption,
 			Tags:         contentFile.Tags,
