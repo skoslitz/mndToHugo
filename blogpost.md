@@ -8,7 +8,7 @@ language = "{{ .Language }}"
 summary = "{{ .Summary }}"
 image = "{{ .Image }}"
 image_caption = "{{ .ImageCaption }}"
-tags = "{{ .Tags }}"
+tags = [{{ range .Tags }} "{{ . }}", {{ end }}]
 +++
 
 {{ .Content }}
