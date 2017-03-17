@@ -83,7 +83,8 @@ func parseBlog() (BlogPosts, error) {
 	for index, value := range blogposts.Posts {
 
 		quote := regexp.MustCompile(`"`)
-		table := regexp.MustCompile(`(<table>.*<\/table>)`)
+		table := regexp.MustCompile(`(?s)(<table>.*<\/table>)`)
+		newLine := regexp.MustCompile(`(?s)(\n|\r|\r\n)`)
 
 		contentFile.Title = strings.TrimSpace(quote.ReplaceAllString(value.Title,
 			"\\\""))
@@ -94,16 +95,16 @@ func parseBlog() (BlogPosts, error) {
 		contentFile.Language = value.Language
 		contentFile.Summary = strings.TrimSpace(quote.ReplaceAllString(value.Summary,
 			"\\\""))
+		contentFile.Summary = newLine.ReplaceAllString(contentFile.Summary,
+			" ")
 		contentFile.Image = strings.TrimSpace(value.Image)
 		contentFile.ImageCaption = strings.TrimSpace(quote.ReplaceAllString(value.ImageCaption,
 			"\\\""))
 		contentFile.Tags = value.Tags
 
+		contentFile.Content = table.ReplaceAllString(value.Body, "")
 		contentFile.Content = strings.TrimSpace(quote.ReplaceAllString(contentFile.Content,
 			"\\\""))
-
-		/* TODO */
-		contentFile.Content = table.ReplaceAllString(value.Body, "")
 
 		/* build filenames*/
 		contentFile.Filename = strings.ToLower(value.URL)
@@ -159,10 +160,21 @@ func parseBlog() (BlogPosts, error) {
 		if err != nil {
 			panic(err)
 		}
-		err = tmpl.ExecuteTemplate(os.Stdout, "blogpost.md", blogpost)
+
+		mdFileName := contentFile.Id + "-" + contentFile.Filename + ".md"
+		mdFilePath := path.Join("content/blog/", mdFileName)
+
+		mdFile, err := os.Create(mdFilePath)
 		if err != nil {
 			panic(err)
 		}
+
+		err = tmpl.ExecuteTemplate(mdFile, "blogpost.md", blogpost)
+		if err != nil {
+			panic(err)
+		}
+
+		defer mdFile.Close()
 
 		/* prepare post assets and copy them*/
 		/*staticDir := path.Join("static/img/blog/", contentFile.Id)
