@@ -9,6 +9,7 @@ summary = "{{ .Summary }}"
 image = "{{ .Image }}"
 image_caption = "{{ .ImageCaption }}"
 tags = [{{ range .Tags }} "{{ . }}", {{ end }}]
+categories = []
 +++
 
 {{ .Content }}
