@@ -1,6 +1,7 @@
 # ignore data files
 /posts
 /content
+/static
 
 # ignore binary
-./mndToHugo
+mndToHugo

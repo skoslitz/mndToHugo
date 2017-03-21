@@ -8,8 +8,11 @@ language = "{{ .Language }}"
 summary = "{{ .Summary }}"
 image = "{{ .Image }}"
 image_caption = "{{ .ImageCaption }}"
-tags = [{{ range .Tags }} "{{ . }}", {{ end }}]
-categories = []
+topics = [{{ range .Tags }} "{{ . }}", {{ end }}]
+tags = []
+# "Cyber Security", "Machine Learning", "Blockchain", "Mixed Reality", "Smart Living" 
+# "Arbeitswelten", "Gender", "Demographie", "Design", "Handel"
+# "Identitäten und Werte", "Mobility", "Demokratie / Mitsprache", "Gesundheit / Nachhaltigkeit", "Informationsverhalten" 
 +++
 
 {{ .Content }}
