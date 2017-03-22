@@ -61,9 +61,7 @@ func parseBlog() (BlogPosts, error) {
 			"\\\""))
 		contentFile.Tags = value.Tags
 
-		contentFile.Content = table.ReplaceAllString(value.Body, "")
-		contentFile.Content = strings.TrimSpace(quote.ReplaceAllString(contentFile.Content,
-			"\\\""))
+		contentFile.Content = strings.TrimSpace(table.ReplaceAllString(value.Body, ""))
 
 		/* build filenames*/
 		contentFile.Filename = strings.ToLower(value.URL)

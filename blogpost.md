@@ -13,6 +13,7 @@ tags = []
 # "Cyber Security", "Machine Learning", "Blockchain", "Mixed Reality", "Smart Living" 
 # "Arbeitswelten", "Gender", "Demographie", "Design", "Handel"
 # "Identitäten und Werte", "Mobility", "Demokratie / Mitsprache", "Gesundheit / Nachhaltigkeit", "Informationsverhalten" 
+# "Länder und Kulturen"
 +++
 
 {{ .Content }}
